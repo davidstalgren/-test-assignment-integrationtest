@@ -7,7 +7,6 @@
 //*****************************************************************************************
 
 import { IMovie } from '../models/Movie';
-import { getData } from '../services/movieservice';
 import * as movieApp from '../movieApp';
 
 beforeEach(() => {
@@ -49,12 +48,80 @@ describe("init", () => {
 //------------------------------------- handleSubmit --------------------------------------
 //*****************************************************************************************
 
+describe("handleSubmit", () => {
+  test("Should call function createHtml properly", async () => {
+    //Arrange
+    document.body.innerHTML = `
+    <form id="searchForm">
+      <input type="text" id="searchText" placeholder="Skriv titel här" />
+      <button type="submit" id="search">Sök</button>
+    </form>
+    <div id="movie-container"></div>
+    `;
+
+    let spyOnCreateHtml = jest.spyOn(movieApp, 'createHtml').mockReturnValue();
+    (document.querySelector("#searchText") as HTMLInputElement).value = 'Movie1';
+    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+
+    //Act
+    await movieApp.handleSubmit()
+      
+    //Assert
+    expect(spyOnCreateHtml).toHaveBeenCalledTimes(1);
+    spyOnCreateHtml.mockRestore();
+  });
+
+  test("Should call function displayNoResult in else properly", async () => {
+    //Arrange
+    document.body.innerHTML = `
+    <form id="searchForm">
+      <input type="text" id="searchText" placeholder="Skriv titel här" />
+      <button type="submit" id="search">Sök</button>
+    </form>
+    <div id="movie-container"></div>
+    `;
+
+    let spyOnDisplayNoResult = jest.spyOn(movieApp, 'displayNoResult').mockReturnValue();
+    (document.querySelector("#searchText") as HTMLInputElement).value = '';
+    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+
+    //Act
+    await movieApp.handleSubmit()
+      
+    //Assert
+    expect(spyOnDisplayNoResult).toHaveBeenCalledTimes(1);
+    spyOnDisplayNoResult.mockRestore();
+  });
+
+  test("Should call function displayNoResult in catch properly", async () => {
+    //Arrange
+    document.body.innerHTML = `
+    <form id="searchForm">
+      <input type="text" id="searchText" placeholder="Skriv titel här" />
+      <button type="submit" id="search">Sök</button>
+    </form>
+    <div id="movie-container"></div>
+    `;
+
+    let spyOnDisplayNoResult = jest.spyOn(movieApp, 'displayNoResult').mockReturnValue();
+    (document.querySelector("#searchText") as HTMLInputElement).value = 'error';
+    let container: HTMLDivElement = document.getElementById("movie-container") as HTMLDivElement;
+
+    //Act
+    await movieApp.handleSubmit()
+      
+    //Assert
+    expect(spyOnDisplayNoResult).toHaveBeenCalledTimes(1);
+    spyOnDisplayNoResult.mockRestore();
+  });
+});
+
 //*****************************************************************************************
 //-------------------------------------- createHtml ---------------------------------------
 //*****************************************************************************************
 
 describe("createHtml", () => {
-    test("Should call function handleSubmit properly if submitevent is triggered", () => {
+    test("Should create HTML with movies", () => {
       //Arrange
       document.body.innerHTML = `
       <div id="movie-container"></div>

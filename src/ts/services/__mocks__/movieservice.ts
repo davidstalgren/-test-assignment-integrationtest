@@ -26,10 +26,13 @@ export let moviesTestData: IMovie[] = [
 
 export async function getData(searchText: string): Promise<IMovie[]> {
     return new Promise((resolve, reject) => {
-        if (searchText !== '') {
+        if (searchText === '') {
+            resolve([]);
+        } 
+        if (searchText !== 'error') {
             resolve(moviesTestData);
         } else {
-            reject([])
+            reject([]);
         }
     });
 };
